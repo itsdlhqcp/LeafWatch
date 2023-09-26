@@ -1,0 +1,54 @@
+{% extends 'index.html' %}
+
+{% block body%}
+
+<div class="container" id="myrow">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" id="uploadimg" href="#upload-image">Upload Image</a>
+        </li>
+      </ul>
+
+      <div class="tab-content">
+        <div class="tab-pane active" id="upload-image" role="tabpanel" aria-labelledby="Uploading..."></div>
+         <div class="row">
+           <div class="col">
+               <form action="#" method="post" enctype="multipart/form-data">
+                <div class="container">
+                    <p>
+                        <input type="file" name="image_name" class="btn" style="background-color: rgb(70, 154, 163); color: azure;" required>
+                    </p>
+                </div>
+              
+                <div class="container">
+                     <p>
+                    <input type="submit" value="submit" style="background-color: rgb(61, 147, 170); color: azure;" >
+                </p>
+                </div>
+               
+                <div class="container">
+                <p><strong>Instructions:</strong> <br>
+                    Only upload the file with extendtion ".png", ".jpg",".jpeg"
+                    For other image extentions yo will <strong>redirect</strong> to error 404 page
+                </p>
+                </div>
+               </form>
+                 
+                    
+                
+           </div>
+         </div>
+    </div>
+</div>
+
+
+
+
+  <style>
+    #myrow{
+        background-color: rgb(205, 205, 205);
+    }
+  </style>
+
+
+{% endblock%}

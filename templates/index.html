@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>LEAF WATCH</title>
+        <link rel="stylesheet" href="/static/css/bootstrap.css" href="main.css">
+        <script src="/static/js/bootstrap.js"></script>
+        <script src="/static/js/bootstrap.bundle.js"></script>
+        <script src="/static/js/code.jquery.com_jquery-3.7.1.js"></script>
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: rgb(12, 81, 27);">
+            <a class="navbar-brand" href="#">Leaf Watch</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                <li class="nav-item active">
+                  <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Features</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Pricing</a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+          <style>
+            /* Custom styles for the text */
+            .custom-text {
+                font-style: italic; /* Change to 'normal' for roman font style */
+            }
+        </style>
+        
+        <div class="container">
+           
+            <h6 class="custom-text">-->Welcome to the world of machine learning</h6>
+            
+        </div>
+
+          {% block body %}
+
+          {% endblock %}
+        
+
+
+        <div class="container">
+            <style>
+                /* Custom styles for the footer */
+                .custom-footer {
+                    text-align: center;
+                    font-size: 11px; /* Adjust the font size as needed */
+                    padding: 1px; /* Adjust the padding as needed */
+                }
+            </style>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            
+            <hr/>
+            <footer class="fixed-bottom custom-footer">
+                <p>Developed by project group-9</p>
+            </footer>
+        </div>
+    </body>
+</html>
