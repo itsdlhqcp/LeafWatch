@@ -16,30 +16,61 @@
                <form action="#" method="post" enctype="multipart/form-data">
                 <div class="container">
                     <p>
-                        <input type="file" name="image_name" class="btn" style="background-color: rgb(70, 154, 163); color: azure;" required>
+                        <input type="file" name="image_name" class="btn" style="background-color: rgb(49, 165, 93); color: azure;" required>
                     </p>
                 </div>
               
                 <div class="container">
                      <p>
-                    <input type="submit" value="submit" style="background-color: rgb(61, 147, 170); color: azure;" >
+                    <input type="submit" value="submit" style="background-color: rgb(38, 143, 80); color: azure;" >
                 </p>
                 </div>
                
                 <div class="container">
-                <p><strong>Instructions:</strong> <br>
+                <p align="center"><strong>Instructions:</strong> <br>
                     Only upload the file with extendtion ".png", ".jpg",".jpeg"
-                    For other image extentions yo will <strong>redirect</strong> to error 404 page
                 </p>
                 </div>
-               </form>
-                 
-                    
-                
+               </form>  
            </div>
          </div>
     </div>
 </div>
+
+{% if fileupload %}
+<div class="container" id='myrow_result'>
+  <div class="row">
+       <div class="col col-8">
+        <table>
+          <tr>
+              <th>Herb</th>
+              <th>Confidence Score</th>
+          </tr>
+          {% for name,score in data.items() %}
+                  <tr>
+                    <td> {{ name }}= </td>
+                    <br>
+                    <td> {{ score*100 }}% </td>
+                  </tr>     
+                {% endfor %}
+              </table>
+       </div>
+       <div class="col col-4">
+            <img src="/static/upload/{{ image_filename }}" alt="uploaded image" width=300 height="{{ height}}">
+       </div>
+  </div>
+</div> 
+
+{% endif %}
+
+{% if extension %}
+   <div class="container" id=myrow_result>
+   <div class="row">
+       <p>Invalid Extension!</p>
+       <p>Extension should be jpeg</p>
+   </div>
+   </div>
+{% endif %}
 
 
 
@@ -47,6 +78,18 @@
   <style>
     #myrow{
         background-color: rgb(205, 205, 205);
+    }
+    #myrow_result{
+        background-color: rgb(205, 205, 205);
+        padding: 5%;
+        align-content: center;
+    }
+    table{
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td{
+      border: 1px solid black;
     }
   </style>
 
