@@ -24,6 +24,7 @@ scaler_path = os.path.join(MODEL_PATH,'dsa_scaler.pickle')
 model_sgd = pickle.load(open(model_sgd_path,'rb'))
 scaler = pickle.load(open(scaler_path,'rb'))
 
+
 @app.errorhandler(404)
 def error404(error):
     message="error404"
@@ -74,7 +75,7 @@ def getheight(path):
     img = skimage.io.imread(path)
     h,w,_ =img.shape
     aspect = h/w
-    given_width = 200
+    given_width = 100
     height = given_width*aspect
     return height
 
