@@ -1,8 +1,132 @@
 {% extends 'index.html' %}
 
-{% block cap %}
+{% block content %}
+<style>
+    @keyframes scannerAnimation {
+        0% {
+            transform: translateY(100%);
+            top: 0;
+            height: 2px;
+        }
+        50% {
+            top: 100%;
+            height: 2px;
+        }
+        51% {
+            transform: translateY(100%);
+            top: -2px; /* Adjust this value to hide the line for a brief moment */
+            height: 2px;
+        }
+        100% {
+            transform: translateY(0);
+            top: 0;
+            height: 2px;
+        }
+    }
 
+    .video-container::before {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #00ff00; /* Green color */
+        animation: scannerAnimation 2s infinite;
+    }
+</style>
 
+<!-- it will hide video feed if image is captured -->
+{% if filename == '' %}
+<h3 style="font-weight: bold; text-align: center;">Scan Image</h3>
+<div id="videoContainer" class="video-container" style="margin: 35px auto; max-width: 30vw; position: relative;">
+    <video id="camera-feed" style="width: 100%; height: 100%; object-fit: cover;" autoplay></video>
+</div>
+<div class="--display --w-100 --h-40">
+    <form class="--display --w-60 --h-100" method="POST" action="/capture" enctype="multipart/form-data">
+        <div class="choose-file">
+            <input type="hidden" name="image" id="file-input"/>
+            <input type="submit" style="display: none;">
+        </div>
+        <div class="submit --display" style="display: flex; justify-content: center;">
+            <button id="captureButton" class="-btn">Capture Image</button>
+        </div>
+    </form>
+</div>
+{% endif %}
 
+<!-- it will show video feed if image is not captured -->
+{% if filename != '' %}
+<h3>Captured Image</h3>
+<img class="captured-image" src="{{ url_for('captured', filename=filename) }}" alt="Uploaded Image" style="margin-top: 10px;">
+{% endif %}
+<div class="--display"><br><span>{{filename}}</span>
+</div>
+<div>
+    {{error_message}}
+</div>
 
-{% endblock%}
+<script>
+    // Wait for the DOM to be loaded before initializing the media devices
+    document.addEventListener("DOMContentLoaded", () => {
+        const videoContainer = document.getElementById("videoContainer");
+        const captureButton = document.getElementById("captureButton");
+        const capturedImageInput = document.getElementById("file-input");
+
+        let isMaxWidth40vw = true;
+
+        // Toggle max-width on touch
+        videoContainer.addEventListener("click", () => {
+            if (isMaxWidth40vw) {
+                videoContainer.style.maxWidth = "80vw";
+            } else {
+                videoContainer.style.maxWidth = "40vw";
+            }
+            isMaxWidth40vw = !isMaxWidth40vw;
+        });
+
+        // Access the user's camera with rear camera preference
+        navigator.mediaDevices.enumerateDevices()
+            .then(devices => {
+                const rearCamera = devices.find(device => device.kind === 'videoinput' && device.label.toLowerCase().includes('back'));
+                if (rearCamera) {
+                    return navigator.mediaDevices.getUserMedia({ video: { deviceId: rearCamera.deviceId } });
+                } else {
+                    // If no rear camera found, fall back to any available camera
+                    return navigator.mediaDevices.getUserMedia({ video: true });
+                }
+            })
+            .then((stream) => {
+                // Create a video element to display the camera feed
+                const video = document.getElementById("camera-feed");
+                video.srcObject = stream;
+
+                // Function to capture the image
+                const captureImage = () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const context = canvas.getContext("2d");
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    // Convert the captured image to a base64 data to save it as .png file
+                    const imageDataUrl = canvas.toDataURL("image/png");
+
+                    // Set the base64 data in the hidden input field
+                    capturedImageInput.value = imageDataUrl;
+
+                    // Submit the form to save the image on the server
+                    captureForm.submit();
+                };
+
+                // `captureButton` click event
+                captureButton.addEventListener("click", captureImage);
+            })
+            .catch((error) => {
+                // Display an error message if access to media devices is denied
+                console.error("Error accessing the camera:", error);
+            });
+    });
+</script>
+{% endblock %}

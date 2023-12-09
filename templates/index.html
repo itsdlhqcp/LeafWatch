@@ -38,6 +38,42 @@
     </nav>
 
     <style>
+        @keyframes scanningAnimation {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.12);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Add animation class to the button */
+        .scanning {
+            animation: scanningAnimation 3s infinite;
+        }
+
+        @keyframes pulseAnimation {
+            0% {
+                transform: scale(1);
+                background-color: #28a745; /* Original color */
+            }
+            50% {
+                transform: scale(1.2);
+                background-color: #218838; /* Color change */
+            }
+            100% {
+                transform: scale(1);
+                background-color: #28a745; /* Original color */
+            }
+        }
+
+        /* Add animation class to the button */
+        .pulse {
+            animation: pulseAnimation 1.5s infinite;
+        }
         /* Custom styles for the text */
         .custom-text {
             font-style: italic;
@@ -49,13 +85,43 @@
         <h6 class="custom-text">-->Welcome to the world of machine learning 🌿🍀🍃</h6>
     </div>
    
-    {% block cap %}
-
+    {% block content %}
+      
     {% endblock %}
 
     {% block upload %}
 
     {% endblock %}
+
+       <!-- Floating scan button -->
+       <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000;">
+        <button id="actionBtn" class="btn btn-success btn-lg scanning" style="border-radius: 50px; padding: 12px 20px; box-shadow: 0 7px 12px rgba(0, 0, 0, 0.1);">
+            <span class="fa fa-search" style="font-size: 24px;"></span> Scan Leaf 🍂
+        </button>
+    </div>
+
+     
+
+        <script>
+            // Function to handle the click event on the action button
+            function handleAction() {
+                // Check if the current URL is the Features page
+                if (window.location.pathname === '/about/') {
+                    // Change button text and redirect to home page
+                    document.getElementById('actionBtn').innerHTML = '<span class="fa fa-upload" style="font-size: 24px;"></span> Upload 🍂';
+                    document.getElementById('actionBtn').addEventListener('click', function () {
+                        // Redirect to the home page
+                        window.location.href = '/';
+                    });
+                } else {
+                    // Redirect to the Features page
+                    window.location.href = '/about/';
+                }
+            }
+    
+            // Add a click event listener to the action button
+            document.getElementById('actionBtn').addEventListener('click', handleAction);
+        </script>
     
     <div class="container mt-1 mb-1" style="color: green;">
         <h5 class="custom-text">Some Ayurvedic herbs & benifits</h5>
@@ -152,7 +218,7 @@
 
         <hr />
         <footer class="fixed-bottom custom-footer">
-            <p>Developed by project group-9</p>
+            <p></p>
         </footer>
     </div>
 </body>

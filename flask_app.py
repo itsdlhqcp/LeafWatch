@@ -1,3 +1,6 @@
+import base64
+import datetime
+from io import BytesIO
 from flask import Flask, render_template
 from flask import request
 import os
@@ -6,6 +9,7 @@ import pandas as pd
 import scipy
 import sklearn
 import os
+from PIL import Image
 import skimage
 import skimage.color
 import skimage.transform
@@ -67,9 +71,32 @@ def index():
     else:
         return render_template('upload.html',fileupload=False)
 
-@app.route('/about/')
-def about():
-    return render_template("about.html")
+# @app.route('/')
+# def about():
+#     return render_template("capture.html")
+
+@app.route('/about/' , methods=['GET','POST'] )
+def capture():
+    filename=''     # using filename variable to display video feed and captured image alternatively on the same page
+    image_data_url = request.form.get('image')
+    if request.method == 'POST':
+        # Decode the base64 data URL to obtain the image data
+        image_data = base64.b64decode(image_data_url.split(',')[1])
+        # Create an image from the decoded data
+        img = Image.open(BytesIO(image_data))
+        # Generate a filename with the current date and time
+        timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        filename = f"img_{timestamp}.png"  # Change file extension to 'png'
+        print(filename)
+        # Save the image in PNG format
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        img.save(file_path, 'JPG')
+        error_message = 'Image successfully captured'
+        # use if you want to display all the images in the folder
+        # image_files = os.listdir(app.config['UPLOAD_FOLDER'])
+        return render_template('capture.html', filename=filename)
+    return render_template('capture.html', filename=filename)
+    
 
 def getheight(path):
     img = skimage.io.imread(path)
