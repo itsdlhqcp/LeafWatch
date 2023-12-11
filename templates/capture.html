@@ -35,34 +35,112 @@
         background-color: #00ff00; /* Green color */
         animation: scannerAnimation 2s infinite;
     }
+
+    /* Added styles for the file name display box */
+    .file-name-box {
+        background-color: #f0f0f0;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #ccc;
+        display: inline-block;
+    }
+
+    .video-container {
+        position: relative;
+        border: 3px solid #00ff00; /* Green border */
+        border-radius: 5px; /* Adjust border-radius as needed */
+        overflow: hidden; /* Ensure the border doesn't increase container size */
+        
+    }
 </style>
 
-<!-- it will hide video feed if image is captured -->
+<!-- it will hide video feed if an image is captured -->
 {% if filename == '' %}
-<h3 style="font-weight: bold; text-align: center;">Scan Image</h3>
-<div id="videoContainer" class="video-container" style="margin: 35px auto; max-width: 30vw; position: relative;">
+<h3 style="font-weight: bold; text-align: center;">Scan Leaf</h3>
+<div id="videoContainer" class="video-container" style="margin: 35px auto; max-width: 67vw; position: relative;">
     <video id="camera-feed" style="width: 100%; height: 100%; object-fit: cover;" autoplay></video>
 </div>
 <div class="--display --w-100 --h-40">
-    <form class="--display --w-60 --h-100" method="POST" action="/capture" enctype="multipart/form-data">
+    <form id="captureForm" class="--display --w-60 --h-100" method="POST" action="/capture" enctype="multipart/form-data">
         <div class="choose-file">
             <input type="hidden" name="image" id="file-input"/>
             <input type="submit" style="display: none;">
         </div>
         <div class="submit --display" style="display: flex; justify-content: center;">
-            <button id="captureButton" class="-btn">Capture Image</button>
+            <button id="captureButton" class="btn btn-success">Scan It</button>
+        </div>
+        <div class="instructions-box" style="background-color: #f0f0f0; padding: 15px; margin: 15px;">
+            <div class="text-center" style="color: red;">
+                <strong>Instructions:</strong><br>
+            </div>
+            <div class="text-center">
+                Focus on image without any jerks [click on to zoom]
+            </div>
+            <div class="text-center">
+                Upload images in good lighting with a uniform background
+            </div>
         </div>
     </form>
 </div>
 {% endif %}
 
-<!-- it will show video feed if image is not captured -->
+<!-- it will show video feed if an image is not captured -->
 {% if filename != '' %}
 <h3>Captured Image</h3>
-<img class="captured-image" src="{{ url_for('captured', filename=filename) }}" alt="Uploaded Image" style="margin-top: 10px;">
-{% endif %}
-<div class="--display"><br><span>{{filename}}</span>
+<div class="col-12 text-center">
+   <!-- <img src="/static/upload/{{ upload_file_name }}" alt="uploaded image" class="img-fluid" style="max-width: 100%;"> -->
+    <div class="file-name-box"><span>Captured Image : {{ image_filename }}</span></div>
 </div>
+
+
+
+{% if fileupload %}
+<div class="container" id='myrow_result'>
+    <div class="row">
+        <div class="col-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Herb</th>
+                        <th>Confidence Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for name, score in data.items() %}
+                    <tr>
+                        <td>{{ name }}=</td>
+                        <td>{{ score*100 }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12 text-center">
+            <img src="/static/upload/{{ image_filename }}" alt="uploaded image" class="img-fluid" style="max-width: 100%;">
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+{% if extension %}
+<div class="container" id="myrow_result">
+    <div class="row">
+        <div class="col-12">
+            <p class="text-danger">Invalid Extension!</p>
+            <p>Extension should be jpg</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+
+
+
+
+{% endif %}
+
 <div>
     {{error_message}}
 </div>
@@ -73,6 +151,7 @@
         const videoContainer = document.getElementById("videoContainer");
         const captureButton = document.getElementById("captureButton");
         const capturedImageInput = document.getElementById("file-input");
+        const fileNameDisplay = document.querySelector(".file-name-box span"); // Update the selector
 
         let isMaxWidth40vw = true;
 
@@ -111,10 +190,13 @@
                     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
                     // Convert the captured image to a base64 data to save it as .png file
-                    const imageDataUrl = canvas.toDataURL("image/png");
+                    const imageDataUrl = canvas.toDataURL("image/jpg");
 
                     // Set the base64 data in the hidden input field
                     capturedImageInput.value = imageDataUrl;
+
+                    // Update the file name display
+                    fileNameDisplay.textContent = "File Name: " + filename;
 
                     // Submit the form to save the image on the server
                     captureForm.submit();

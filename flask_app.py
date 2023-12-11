@@ -21,12 +21,19 @@ app = Flask(__name__)
 BASE_PATH = os.getcwd()
 UPLOAD_PATH = os.path.join(BASE_PATH,'static/upload/')
 MODEL_PATH = os.path.join(BASE_PATH, 'static/models/')
+UPLOAD_FOLDER = os.path.join(BASE_PATH, 'static/image/')
 
 ##------------------------------LOAD MODELS -----------------------------
 model_sgd_path = os.path.join(MODEL_PATH,'dsa_image_classification_sgd.pickle')
 scaler_path = os.path.join(MODEL_PATH,'dsa_scaler.pickle')
 model_sgd = pickle.load(open(model_sgd_path,'rb'))
 scaler = pickle.load(open(scaler_path,'rb'))
+
+# uploaded Images folder path
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'image')
+# Check if the folder directory exists, if not then create it
+if not os.path.exists(app.config['UPLOAD_FOLDER'] ):
+    os.makedirs(app.config['UPLOAD_FOLDER'] )
 
 
 @app.errorhandler(404)
@@ -75,26 +82,44 @@ def index():
 # def about():
 #     return render_template("capture.html")
 
-@app.route('/about/' , methods=['GET','POST'] )
+@app.route('/capture', methods=['GET', 'POST'])
 def capture():
-    filename=''     # using filename variable to display video feed and captured image alternatively on the same page
+    filename = ''  # using filename variable to display video feed and captured image alternatively on the same page
     image_data_url = request.form.get('image')
-    if request.method == 'POST':
-        # Decode the base64 data URL to obtain the image data
-        image_data = base64.b64decode(image_data_url.split(',')[1])
-        # Create an image from the decoded data
-        img = Image.open(BytesIO(image_data))
-        # Generate a filename with the current date and time
-        timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-        filename = f"img_{timestamp}.png"  # Change file extension to 'png'
-        print(filename)
-        # Save the image in PNG format
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        img.save(file_path, 'JPG')
-        error_message = 'Image successfully captured'
-        # use if you want to display all the images in the folder
-        # image_files = os.listdir(app.config['UPLOAD_FOLDER'])
-        return render_template('capture.html', filename=filename)
+
+    if request.method == 'POST' and image_data_url:
+        try:
+            # Decode the base64 data URL to obtain the image data
+            image_data = base64.b64decode(image_data_url.split(',')[1])
+            
+            # Create an image from the decoded data
+            img = Image.open(BytesIO(image_data))
+            
+            # Convert the image to RGB mode if it's in RGBA mode
+            if img.mode == 'RGBA':
+                img = img.convert('RGB')
+            
+            # Generate a filename with the current date and time
+            timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+            upload_file_name = f"leaf_{timestamp}.jpg"
+            
+            # Save the image to the upload folder
+            upload_file_path = os.path.join(UPLOAD_PATH, upload_file_name)
+            img.save(upload_file_path, 'JPEG')
+            print('File saved successfully')
+
+            # Send to the pipeline model
+            results = pipeline_model(upload_file_path, scaler, model_sgd)
+            hei = getheight(upload_file_path)
+            print(results)
+
+            # Display the results on the template
+            return render_template('capture.html', fileupload=True, extension=False, data=results,image_filename=upload_file_name,height=hei)
+            
+        except IndexError as e:
+            error_message = f'Error processing image: {str(e)}'
+            return render_template('capture.html', filename=filename, error_message=error_message)
+
     return render_template('capture.html', filename=filename)
     
 

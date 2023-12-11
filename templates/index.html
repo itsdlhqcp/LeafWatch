@@ -28,7 +28,7 @@
                     <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/about/">Scan Leaf</a>
+                    <a class="nav-link" href="/capture">Scan Leaf</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/features/">Features</a>
@@ -109,7 +109,7 @@
             // Function to handle the click event on the action button
             function handleAction() {
                 // Check if the current URL is the Features page
-                if (window.location.pathname === '/about/') {
+                if (window.location.pathname === '/capture') {
                     // Change button text and redirect to home page
                     document.getElementById('actionBtn').innerHTML = '<span class="fa fa-upload" style="font-size: 24px;"></span> Upload 🍂';
                     document.getElementById('actionBtn').addEventListener('click', function () {
@@ -118,7 +118,7 @@
                     });
                 } else {
                     // Redirect to the Features page
-                    window.location.href = '/about/';
+                    window.location.href = '/capture';
                 }
             }
     
