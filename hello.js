@@ -1,0 +1,1 @@
+console.loag("its good");
